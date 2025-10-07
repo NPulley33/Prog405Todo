@@ -1,4 +1,5 @@
 using Todo.Common.Models;
+using Todo.Common.Requests;
 using Todo.Common.Services;
 
 namespace Todo.Test;
@@ -12,9 +13,23 @@ public class ClassServiceTest
     }
 
     [Fact]
-    public void CreateTaskSucceeds()
+    public async Task CreateTaskSucceeds()
     {
         var taskService = new TaskService(this.service);
+
+        var happyRequest = new CreateTaskRequest("Test Task", "Dummy Description", DateTime.UtcNow.AddDays(3));
+        var createTaskResult = await taskService.CreateTaskAsync(happyRequest);
+
+        Assert.True(createTaskResult.IsOk());
+
+        var badRequest = new CreateTaskRequest("Test Task 2", "", DateTime.UtcNow);
+        var taskResult = await taskService.CreateTaskAsync(badRequest);
+
+        Assert.True(createTaskResult.IsErr());
+
+        //simulate as many bad inputs as you can think of
+        //create tasks succeeds w/ good input
+        //one failure
 
     }
 }
