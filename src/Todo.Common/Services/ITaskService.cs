@@ -5,7 +5,7 @@ namespace Todo.Common.Services
 {
     public interface ITaskService
     {
-        Task<Result> CreateTaskAsync(CreateTaskRequest request);
+        Task<Result<string>> CreateTaskAsync(CreateTaskRequest request);
     }
 
     public class TaskService : ITaskService
@@ -17,19 +17,32 @@ namespace Todo.Common.Services
             this.fileDataService = fileDataService;
         }
         
-        public async Task<Result> CreateTaskAsync(CreateTaskRequest request)
+        public async Task<Result<string>> CreateTaskAsync(CreateTaskRequest request)
         {
             // request -> model
 
             var modelResult = TaskModel.CreateTask(request);
             if (modelResult.IsErr())
             {
-                return Result.Err(modelResult.GetErr());
+                return Result<string>.Err(modelResult.GetErr());
+            }
+            var model = modelResult.GetVal();
+            if ( model is null)
+            {
+                return Result<string>.Err("No Model");
             }
 
             await this.fileDataService.SaveAsync(modelResult.GetVal());
-            return Result.Ok();
+            return Result<string>.Ok(model.Key);
             
         }
+
+        public async Task<TaskModel> GetAsync(string key)
+        {
+            //TODO error handling for null
+            return await this.fileDataService.GetAsync(key);
+        }
+
+
     }
 }

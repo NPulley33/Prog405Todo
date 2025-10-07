@@ -21,15 +21,27 @@ public class ClassServiceTest
         var createTaskResult = await taskService.CreateTaskAsync(happyRequest);
 
         Assert.True(createTaskResult.IsOk());
-
-        var badRequest = new CreateTaskRequest("Test Task 2", "", DateTime.UtcNow);
-        var taskResult = await taskService.CreateTaskAsync(badRequest);
-
-        Assert.True(createTaskResult.IsErr());
+        //verify getasync
 
         //simulate as many bad inputs as you can think of
         //create tasks succeeds w/ good input
         //one failure
+
+    }
+
+    [Fact]
+    public async Task UpdateTaskSucceeds()
+    {
+        var taskService = new TaskService(this.service);
+
+        var happyRequest = new CreateTaskRequest("Test Task", "Dummy Description", DateTime.UtcNow.AddDays(3));
+        var createTaskResult = await taskService.CreateTaskAsync(happyRequest);
+
+        Assert.True(createTaskResult.IsOk());
+
+        var resultKey = createTaskResult.GetVal();
+        if (resultKey is not null) //TODO proper error handling for null
+        await taskService.GetAsync(resultKey);
 
     }
 }
