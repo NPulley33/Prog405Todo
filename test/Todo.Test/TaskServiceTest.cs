@@ -23,10 +23,15 @@ public class ClassServiceTest
         Assert.True(createTaskResult.IsOk());
         //verify getasync
 
+        var resultKey = createTaskResult.GetVal();
+
+        //Needs proper null error handling (ask Karl)
+        var sameTaskResult = await taskService.GetAsync(resultKey);
+        Assert.Equal(sameTaskResult.Name, "Test Task");
+
         //simulate as many bad inputs as you can think of
         //create tasks succeeds w/ good input
         //one failure
-
     }
 
     [Fact]
@@ -41,7 +46,7 @@ public class ClassServiceTest
 
         var resultKey = createTaskResult.GetVal();
         if (resultKey is not null) //TODO proper error handling for null
-        await taskService.GetAsync(resultKey);
+            await taskService.GetAsync(resultKey);
 
     }
 }

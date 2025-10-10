@@ -37,9 +37,8 @@ namespace Todo.Common.Services
             
         }
 
-        public async Task<TaskModel> GetAsync(string key)
+        public async Task<TaskModel?> GetAsync(string key)
         {
-            //TODO error handling for null
             return await this.fileDataService.GetAsync(key);
         }
 
