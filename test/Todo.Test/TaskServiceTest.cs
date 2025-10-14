@@ -27,7 +27,7 @@ public class ClassServiceTest
 
         //Needs proper null error handling (ask Karl)
         var sameTaskResult = await taskService.GetAsync(resultKey);
-        Assert.Equal(sameTaskResult.Name, "Test Task");
+        Assert.Equal(sameTaskResult.Name, happyRequest.Name);
 
         //simulate as many bad inputs as you can think of
         //create tasks succeeds w/ good input
@@ -45,9 +45,20 @@ public class ClassServiceTest
         Assert.True(createTaskResult.IsOk());
 
         var resultKey = createTaskResult.GetVal();
-        if (resultKey is not null) //TODO proper error handling for null
-            await taskService.GetAsync(resultKey);
+        Assert.True(resultKey is not null);
 
+        var updateRequest = new UpdateTaskRequest( resultKey,
+            new CreateTaskRequest("Updated Task", "Dummy Description", DateTime.UtcNow.AddDays(3)));
+        var updateTaskResult = await taskService.UpdateTaskAsync(updateRequest);
+
+        Assert.True(updateTaskResult.IsOk());
+        Assert.True(resultKey is not null);
+
+        var updateResultKey = updateTaskResult.GetVal();
+        Assert.True(resultKey == updateResultKey);
+
+        var updateResultSaved = await taskService.GetAsync(resultKey);
+        Assert.Equal(updateResultSaved.Name, updateRequest.UpdatedTask.Name);
     }
 }
 

@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Todo.Common.Requests;
 
 namespace Todo.Common.Models
@@ -42,7 +43,23 @@ namespace Todo.Common.Models
             });
         }
 
-        //public static Result<TaskModel> UpdateTask(UpdateTaskRequest request)
-        //{ }
+        public static Result<TaskModel> UpdateTask(UpdateTaskRequest request)
+        {
+            var validationResult = request.IsValid();
+            if (validationResult.IsErr())
+            {
+                return Result<TaskModel>.Err(validationResult.GetErr());
+            }
+
+            //if (request.Key != this.Key) return Result<TaskModel>.Err("Keys do not match");
+
+            return Result<TaskModel>.Ok(new TaskModel
+            {
+                Key = request.Key,
+                Name = request.UpdatedTask.Name,
+                Description = request.UpdatedTask.Description,
+                DueDate = request.UpdatedTask.DueDate,
+            }); 
+        }
     }
 }
